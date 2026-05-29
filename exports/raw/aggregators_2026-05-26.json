@@ -1,0 +1,93 @@
+[
+  {
+    "rfp_id": "BIDNET-1",
+    "title": "Closed Bids",
+    "agency": "",
+    "portal": "BidNet Direct",
+    "portal_category": "Aggregator",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://www.bidnetdirect.com/solicitations/closed-bids",
+    "description": "",
+    "keyword_matched": "artificial intelligence",
+    "scraped_at": "2026-05-26T20:21:25.919749"
+  },
+  {
+    "rfp_id": "BIDNET-2",
+    "title": "Closed Bids",
+    "agency": "",
+    "portal": "BidNet Direct",
+    "portal_category": "Aggregator",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://www.bidnetdirect.com/solicitations/closed-bids",
+    "description": "",
+    "keyword_matched": "machine learning",
+    "scraped_at": "2026-05-26T20:21:29.188238"
+  },
+  {
+    "rfp_id": "BIDNET-3",
+    "title": "Closed Bids",
+    "agency": "",
+    "portal": "BidNet Direct",
+    "portal_category": "Aggregator",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://www.bidnetdirect.com/solicitations/closed-bids",
+    "description": "",
+    "keyword_matched": "software development",
+    "scraped_at": "2026-05-26T20:21:32.549473"
+  },
+  {
+    "rfp_id": "BONFIRE-1",
+    "title": "Euna Procurement   Procurement Software        Learn More",
+    "agency": "",
+    "portal": "Bonfire",
+    "portal_category": "Aggregator",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://eunasolutions.com/solutions/procurement/",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T20:21:36.769496"
+  },
+  {
+    "rfp_id": "BONFIRE-2",
+    "title": "Euna Supplier Network   Public Sector Bidding Platform\u00a0        Learn More",
+    "agency": "",
+    "portal": "Bonfire",
+    "portal_category": "Aggregator",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://supplier.eunasolutions.com/",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T20:21:36.769514"
+  },
+  {
+    "rfp_id": "BONFIRE-3",
+    "title": "State Of Public Procurement",
+    "agency": "",
+    "portal": "Bonfire",
+    "portal_category": "Aggregator",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://eunasolutions.com/resources/2025-state-of-public-procurement/",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T20:21:36.769518"
+  },
+  {
+    "rfp_id": "BONFIRE-4",
+    "title": "Euna Procurement",
+    "agency": "",
+    "portal": "Bonfire",
+    "portal_category": "Aggregator",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://eunasolutions.com/solutions/procurement/",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T20:21:36.769520"
+  }
+]

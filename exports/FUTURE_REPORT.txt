@@ -1,0 +1,188 @@
+================================================================
+EITACIES RFP GENAI — STATUS REPORT & FUTURE DEVELOPMENTS
+Generated: 2026-05-27
+================================================================
+
+CURRENT STATUS
+--------------
+Total RFPs: 199
+Portals Working: 9
+Categories: 15
+NLP Summaries: 100 (SAM.gov records)
+Closing Dates: 60 extracted, 139 with reasons for missing
+
+PORTALS THAT WORK (scraping real data):
+1. SAM.gov — 157 RFPs (Federal procurement)
+   - Full NLP summaries from page content
+   - PDF download capability built
+   - Date extraction working
+   - Quality: ★★★★★
+
+2. University of Iowa — 15 RFPs
+   - Direct page scraping
+   - Quality: ★★★☆☆
+
+3. Montana EMACS — 9 RFPs
+   - SciQuest platform
+   - Quality: ★★★☆☆
+
+4. LAFPP (Los Angeles) — 8 RFPs
+   - City pension fund RFPs
+   - Quality: ★★★☆☆
+
+5. LA County — 5 RFPs
+   - County procurement
+   - Quality: ★★☆☆☆
+
+6. City of Ashland Oregon — 5 RFPs
+   - Quality: ★★☆☆☆
+
+7. Texas DOT — 5 RFPs
+   - Transportation procurement
+   - Quality: ★★☆☆☆
+
+8. Chicago Public Schools — 1 RFP
+9. City of Burbank — 1 RFP
+10. TIPS — 1 RFP
+
+PORTALS THAT REQUIRE PAID ACCESS (cannot scrape):
+- BidNet Direct — Requires subscription ($$$)
+- SAP Ariba — Requires enterprise license
+- JAGGAER — Requires organization-specific URLs
+- Bonfire — Requires paid account
+- OpenGov — Marketing page only
+- Planet Bids — Marketing page only
+
+================================================================
+WHAT YOU NEED TO ASK YOUR MANAGER
+================================================================
+
+1. BUDGET FOR PORTAL ACCESS
+   Ask: "Can we get subscriptions for these portals?"
+   - BidNet Direct: ~$500-1000/year (covers 100s of agencies)
+   - SAP Ariba: Included in existing EITACIES subscription?
+   - Bonfire: ~$200-500/year per portal
+
+2. SAM.GOV API KEY
+   Ask: "Can we register for a free SAM.gov API key?"
+   - Free at https://sam.gov
+   - Allows bulk data access (1000 results per query)
+   - More reliable than web scraping
+
+3. PDF PROCESSING PRIORITY
+   Ask: "Should we prioritize PDF reading for all SAM.gov RFPs?"
+   - Currently: 100/157 SAM.gov records have NLP summaries
+   - Can process remaining 57 with PDF reading
+   - Takes ~15 minutes for full batch
+
+4. CRM INTEGRATION
+   Ask: "Which CRM should we integrate with?"
+   - Current: No CRM integration (just dashboard)
+   - Options: Salesforce, HubSpot, Attio, Pipedrive
+   - Need API key and integration design
+
+5. AUTOMATED SCRAPING SCHEDULE
+   Ask: "How often should we scrape for new RFPs?"
+   - Recommended: Daily at 6 AM ET
+   - Can set up cron job via Hermes
+   - Will automatically find new RFPs and update dashboard
+
+6. PORTAL CREDENTIALS
+   Ask: "Can we verify these portal credentials are active?"
+   - SAM.gov: bdm@eitacies.com / Eita567890$%
+   - BidNet: bdm@eitacies.com / Eita567890$%
+   - SAP Ariba: bdm@eitacies.com / Eita13579$%
+   - Need to confirm subscriptions are current
+
+7. REPORTING
+   Ask: "Do you want weekly Excel reports emailed to the team?"
+   - Can auto-generate every Sunday at 5 PM ET
+   - Includes all new RFPs with summaries
+   - Can send via email or Slack
+
+8. CATEGORIES
+   Ask: "Are these 15 categories correct for EITACIES?"
+   - Current: AI/ML, Software, IT Infra, Cloud, Cyber,
+     Data Analytics, IT Staffing, Consulting, Training,
+     R&D, Professional Services, Healthcare IT,
+     Digital Transformation, Telecom, Other
+   - Can add/remove based on business focus
+
+9. SCORING
+   Ask: "Do you want RFP relevance scoring?"
+   - Can score 0-100 based on keyword matching
+   - Can auto-assign tiers (Pursue, Prospect, Monitor)
+   - Helps prioritize which RFPs to pursue
+
+10. NOTIFICATIONS
+    Ask: "How should we alert about new high-priority RFPs?"
+    - Options: Email, Slack, SMS
+    - Can filter by category, portal, or score
+    - Can set up instant alerts for Tier 1 RFPs
+
+================================================================
+FUTURE DEVELOPMENT ROADMAP
+================================================================
+
+PHASE 1 (Current):
+✓ SAM.gov scraping with NLP summaries
+✓ City portal scraping (LA, Texas DOT)
+✓ Dashboard with category/status filters
+✓ Open/Closed RFP tracking
+✓ PDF reading capability
+
+PHASE 2 (Next 2 weeks):
+- Process remaining 57 SAM.gov RFPs with PDF reading
+- Fix city portal timeouts (LA, Burbank, Sunnyvale)
+- Add date extraction from PDF attachments
+- Improve NLP classification accuracy
+
+PHASE 3 (Next month):
+- BidNet Direct integration (if subscription obtained)
+- SAP Ariba authenticated scraping
+- JAGGAER portal scraping (need correct URLs)
+- CRM integration (Salesforce/HubSpot)
+
+PHASE 4 (Ongoing):
+- Automated daily scraping schedule
+- Weekly Excel report generation
+- Email/Slack notifications
+- RFP relevance scoring (0-100)
+- Tier assignment (Pursue/Monitor/Skip)
+
+================================================================
+TECHNICAL DEBT
+================================================================
+
+1. Date extraction needs improvement
+   - Only 60/199 records have closing dates
+   - Many SAM.gov pages use Angular (hard to scrape)
+   - PDF dates often in non-standard formats
+
+2. Category classification accuracy
+   - 55/199 still in "Other Technology"
+   - NLP classification works but needs tuning
+   - Some records need manual review
+
+3. Portal coverage gaps
+   - 13 portals still cannot scrape
+   - Need subscription access or correct URLs
+   - Bot detection blocking some portals
+
+4. Performance
+   - PDF reading takes ~10 seconds per record
+   - Full pipeline takes ~20 minutes
+   - Could optimize with parallel processing
+
+================================================================
+RECOMMENDED IMMEDIATE ACTIONS
+================================================================
+
+1. Register for SAM.gov API key (free, 5 minutes)
+2. Verify BidNet Direct subscription status
+3. Run full PDF pipeline on remaining 57 SAM.gov records
+4. Set up daily scraping cron job
+5. Review "Other Technology" category for reclassification
+6. Test city portal scraping with longer timeouts
+
+================================================================

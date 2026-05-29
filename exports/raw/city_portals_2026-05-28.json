@@ -1,0 +1,200 @@
+[
+  {
+    "rfp_id": "LA-County-1",
+    "title": "Los Angeles County Solicitations",
+    "portal": "LA County",
+    "portal_category": "City",
+    "details_url": "https://camisvr.co.la.ca.us/LACoBids/",
+    "summary": "Los Angeles County Solicitations",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:10.675691"
+  },
+  {
+    "rfp_id": "LA-County-2",
+    "title": "Download a list of open solicitations.",
+    "portal": "LA County",
+    "portal_category": "City",
+    "details_url": "https://camisvr.co.la.ca.us/Download/Rpt_Listing/OpenBidList.csv",
+    "summary": "Download a list of open solicitations.",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:10.675725"
+  },
+  {
+    "rfp_id": "LA-County-3",
+    "title": "Download Open Solicitations\n\nDownload a CSV file with a list of open solicitations.",
+    "portal": "LA County",
+    "portal_category": "City",
+    "details_url": "https://camisvr.co.la.ca.us/Download/Rpt_Listing/OpenBidList.csv",
+    "summary": "Download Open Solicitations\n\nDownload a CSV file with a list of open solicitations.",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:10.675749"
+  },
+  {
+    "rfp_id": "LA-County-4",
+    "title": "eCAPS Procurement Team",
+    "portal": "LA County",
+    "portal_category": "City",
+    "details_url": "mailto:EDL-ePROC_FUNC@isd.lacounty.gov?subject=LA%20County%20Bid%20Site",
+    "summary": "eCAPS Procurement Team",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:10.675763"
+  },
+  {
+    "rfp_id": "LA-County-5",
+    "title": "eCAPS PROCUREMENT HELP-DESK",
+    "portal": "LA County",
+    "portal_category": "City",
+    "details_url": "https://camisvr.co.la.ca.us/LACoBids/BidLookUp/OpenBidList",
+    "summary": "eCAPS PROCUREMENT HELP-DESK",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:10.675778"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-1",
+    "title": "Request for Proposals",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://lafpp.lacity.gov/about/request-proposals",
+    "summary": "Request for Proposals",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.621957"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-2",
+    "title": "Contractor Disclosure Policy & Forms",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://lafpp.lacity.gov/about/request-proposals/contractor-disclosure-policy-forms",
+    "summary": "Contractor Disclosure Policy & Forms",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.621984"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-3",
+    "title": "Regional Alliance Marketplace for Procurement (RAMP)",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://www.rampla.org/s/",
+    "summary": "Regional Alliance Marketplace for Procurement (RAMP)",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.622002"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-4",
+    "title": "Standard Provisions for City Contracts",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://content.lafpp.lacity.gov/wp-content/uploads/2025/02/STANDARD-PROVISIONS-Rev.1.25-v.2_Remediated-2-19-25.pdf",
+    "summary": "Standard Provisions for City Contracts",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.622018"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-5",
+    "title": "Brochure for Bidders and Contractors",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://ethics.lacity.gov/pdf/publications/Bidders-Contractors-Brochure.pdf",
+    "summary": "Brochure for Bidders and Contractors",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.622034"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-6",
+    "title": "Contractor Disclosure Policy & Forms\n\nThe Contractor Disclosure Policy is an LAFPP policy that requires contractors, including possible contractors participating in a selection process, to disclose po",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://lafpp.lacity.gov/about/request-proposals/contractor-disclosure-policy-forms",
+    "summary": "Contractor Disclosure Policy & Forms\n\nThe Contractor Disclosure Policy is an LAFPP policy that requires contractors, including possible contractors participating in a selection process, to disclose po",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.622065"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-7",
+    "title": "All Contractors: Please review our Contractor Disclosure Policy & Forms page.",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://content.lafpp.lacity.gov/about/request-proposals/contractor-disclosure-policy-forms/",
+    "summary": "All Contractors: Please review our Contractor Disclosure Policy & Forms page.",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.622091"
+  },
+  {
+    "rfp_id": "LAFPP-(Los-Angeles)-8",
+    "title": "RAMPLA \u2013 Search for City of LA Bid Opportunities",
+    "portal": "LAFPP (Los Angeles)",
+    "portal_category": "City",
+    "details_url": "https://www.rampla.org/s/",
+    "summary": "RAMPLA \u2013 Search for City of LA Bid Opportunities",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:14.622481"
+  },
+  {
+    "rfp_id": "Texas-DOT-1",
+    "title": "Road, bridge, and maintenance contractors, and roadway and traffic material suppliers",
+    "portal": "Texas DOT",
+    "portal_category": "City",
+    "details_url": "https://www.txdot.gov/business/road-bridge-maintenance.html",
+    "summary": "Road, bridge, and maintenance contractors, and roadway and traffic material suppliers",
+    "rfp_category": "AI / Machine Learning",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:18.219476"
+  },
+  {
+    "rfp_id": "Texas-DOT-2",
+    "title": "Scientific services contracts - requests for proposal",
+    "portal": "Texas DOT",
+    "portal_category": "City",
+    "details_url": "https://www.txdot.gov/business/scientific-services-contracts-rfp.html",
+    "summary": "Scientific services contracts - requests for proposal",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:18.219506"
+  },
+  {
+    "rfp_id": "Texas-DOT-3",
+    "title": "PEPS contract advertisements",
+    "portal": "Texas DOT",
+    "portal_category": "City",
+    "details_url": "https://www.txdot.gov/business/peps/opportunities/peps-contract-advertisements.html",
+    "summary": "PEPS contract advertisements",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:18.219522"
+  },
+  {
+    "rfp_id": "Texas-DOT-4",
+    "title": "Fiscal year procurement plan",
+    "portal": "Texas DOT",
+    "portal_category": "City",
+    "details_url": "https://www.txdot.gov/business/peps/opportunities/fiscal-year-procurement-plan.html",
+    "summary": "Fiscal year procurement plan",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:18.219537"
+  },
+  {
+    "rfp_id": "Texas-DOT-5",
+    "title": "Project/contract letting",
+    "portal": "Texas DOT",
+    "portal_category": "City",
+    "details_url": "https://www.txdot.gov/business/road-bridge-maintenance/contract-letting.html",
+    "summary": "Project/contract letting",
+    "rfp_category": "Other Technology",
+    "closing_date": null,
+    "scraped_at": "2026-05-28T17:46:18.219551"
+  }
+]

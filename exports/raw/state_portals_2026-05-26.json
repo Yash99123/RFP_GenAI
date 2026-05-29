@@ -1,0 +1,93 @@
+[
+  {
+    "rfp_id": "CAL-eProcure-1",
+    "title": "Selling to the State",
+    "agency": "CAL eProcure",
+    "portal": "CAL eProcure",
+    "portal_category": "State",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://caleprocure.ca.gov/pages/bidder-vendor.aspx",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T19:57:22.791360"
+  },
+  {
+    "rfp_id": "CAL-eProcure-2",
+    "title": "Public Procurement Information",
+    "agency": "CAL eProcure",
+    "portal": "CAL eProcure",
+    "portal_category": "State",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://caleprocure.ca.gov/pages/public-search.aspx",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T19:57:22.791388"
+  },
+  {
+    "rfp_id": "CAL-eProcure-3",
+    "title": "Find Bid Opportunities (CSCR)",
+    "agency": "CAL eProcure",
+    "portal": "CAL eProcure",
+    "portal_category": "State",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://caleprocure.ca.gov/pages/Events-BS3/event-search.aspx",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T19:57:22.791392"
+  },
+  {
+    "rfp_id": "CAL-eProcure-4",
+    "title": "Find State Contracts (LPA)",
+    "agency": "CAL eProcure",
+    "portal": "CAL eProcure",
+    "portal_category": "State",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://caleprocure.ca.gov/pages/LPASearch/lpa-search.aspx",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T19:57:22.791395"
+  },
+  {
+    "rfp_id": "CAL-eProcure-5",
+    "title": "Edit Bidder Account",
+    "agency": "CAL eProcure",
+    "portal": "CAL eProcure",
+    "portal_category": "State",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://caleprocure.ca.gov/pages/EditAccount-BS3/edit-account-main.aspx",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T19:57:22.791398"
+  },
+  {
+    "rfp_id": "CAL-eProcure-6",
+    "title": "Sell to the State",
+    "agency": "CAL eProcure",
+    "portal": "CAL eProcure",
+    "portal_category": "State",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://caleprocure.ca.gov/pages/bidder-vendor.aspx",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T19:57:22.791401"
+  },
+  {
+    "rfp_id": "CAL-eProcure-7",
+    "title": "Get Public Procurement Information",
+    "agency": "CAL eProcure",
+    "portal": "CAL eProcure",
+    "portal_category": "State",
+    "due_date": "",
+    "posted_date": "",
+    "details_url": "https://caleprocure.ca.gov/pages/public-search.aspx",
+    "description": "",
+    "keyword_matched": "",
+    "scraped_at": "2026-05-26T19:57:22.791404"
+  }
+]
