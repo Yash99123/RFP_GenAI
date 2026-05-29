@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entro — Tender Dashboard</title>
+<script src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+<link href="https://unpkg.com/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #f8f7f4;
+    --surface: #ffffff;
+    --border:  #e5e3dc;
+    --text:    #1a1a18;
+    --muted:   #6b6a64;
+    --accent:  #1a1a18;
+    --radius:  10px;
+    --font:    -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+  /* Layout */
+  .sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; }
+  .main    { margin-left: 220px; min-height: 100vh; }
+  .topbar  { height: 56px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; position: sticky; top: 0; z-index: 50; }
+  .content { padding: 24px; }
+
+  /* Sidebar */
+  .logo    { padding: 20px 20px 8px; display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+  .logo-text { font-weight: 600; font-size: 15px; }
+  .logo-sub  { font-size: 11px; color: var(--muted); }
+  .nav { padding: 8px 12px; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left; transition: all .15s; }
+  .nav-item:hover  { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--accent); color: #fff; }
+  .nav-item i { font-size: 17px; }
+  .nav-section { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 12px 10px 4px; }
+  .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 6px; }
+  .status-dot.red { background: #ef4444; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+  .card-sm { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+
+  /* Metric cards */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .metric-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+  .metric-value { font-size: 28px; font-weight: 600; line-height: 1; }
+  .metric-sub   { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; background: var(--bg); }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--bg); cursor: pointer; }
+
+  /* Badges / Pills */
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .badge-strategic { background: #fef2f2; color: #991b1b; }
+  .badge-t1  { background: #fff7ed; color: #9a3412; }
+  .badge-t2  { background: #fefce8; color: #854d0e; }
+  .badge-t3  { background: #f0fdf4; color: #166534; }
+  .badge-t4  { background: #f8f7f4; color: #6b6a64; }
+  .badge-merx     { background: #eff6ff; color: #1e40af; }
+  .badge-bidnet   { background: #f5f3ff; color: #5b21b6; }
+  .badge-bidprime { background: #fdf4ff; color: #7e22ce; }
+  .badge-canada   { background: #fff1f2; color: #be123c; }
+
+  /* Score bar */
+  .score-wrap { display: flex; align-items: center; gap: 8px; }
+  .score-bar  { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; min-width: 60px; }
+  .score-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+  .score-num  { font-size: 12px; font-weight: 600; min-width: 24px; text-align: right; }
+
+  /* Search + filters */
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+  input[type=text], select {
+    height: 36px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; color: var(--text); background: var(--surface); outline: none;
+    font-family: var(--font);
+  }
+  input[type=text] { padding: 0 12px 0 34px; width: 100%; }
+  select { padding: 0 10px; cursor: pointer; }
+  input[type=text]:focus, select:focus { border-color: var(--accent); }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--font); transition: all .15s; }
+  .btn:hover    { background: var(--bg); }
+  .btn-primary  { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { opacity: .88; }
+  .btn-danger   { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+  .btn-sm       { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .modal { background: var(--surface); border-radius: 14px; width: 100%; max-width: 680px; max-height: 88vh; overflow-y: auto; border: 1px solid var(--border); }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .modal-body   { padding: 20px 24px; }
+  .modal-close  { border: none; background: none; cursor: pointer; color: var(--muted); font-size: 20px; flex-shrink: 0; padding: 2px; }
+  .modal-close:hover { color: var(--text); }
+  .detail-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+  .detail-item  { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .detail-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 3px; }
+  .detail-value { font-size: 13px; color: var(--text); }
+
+  /* Pipeline page */
+  .run-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .run-row:last-child { border-bottom: none; }
+  .run-stat { text-align: center; min-width: 60px; }
+  .run-stat-num   { font-size: 18px; font-weight: 600; }
+  .run-stat-label { font-size: 11px; color: var(--muted); }
+  .run-date { flex: 1; font-size: 13px; }
+  .run-date-main { font-weight: 500; }
+  .run-date-sub  { font-size: 12px; color: var(--muted); }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+
+  /* Misc */
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .tag  { display: inline-block; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; padding: 2px 7px; margin: 2px 2px 0 0; }
+  .empty-state { text-align: center; padding: 60px 0; color: var(--muted); }
+  .empty-state i { font-size: 40px; margin-bottom: 12px; display: block; }
+  .spinner { border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-center { display: flex; align-items: center; justify-content: center; padding: 60px; }
+  .pagination { display: flex; align-items: center; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+  .page-info { font-size: 13px; color: var(--muted); }
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  .alert-warning { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+  .alert-info    { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+</style>
+</head>
+<body x-data="app()" x-init="init()">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">E</div>
+    <div>
+      <div class="logo-text">EITACIES</div>
+      <div class="logo-sub">RFP GenAI</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-section">Main</div>
+    <button class="nav-item" :class="page==='dashboard'&&'active'" @click="page='dashboard'">
+      <i class="ti ti-layout-dashboard"></i> Dashboard
+    </button>
+    <button class="nav-item" :class="page==='tenders'&&'active'" @click="page='tenders';loadTenders()">
+      <i class="ti ti-file-description"></i> Tenders
+    </button>
+    <button class="nav-item" :class="page==='closing'&&'active'" @click="page='closing';loadClosing()">
+      <i class="ti ti-clock-exclamation"></i> Closing Soon
+      <span x-show="stats.closing_soon>0" x-text="stats.closing_soon" style="margin-left:auto;background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px"></span>
+    </button>
+
+    <div class="nav-section">Automation</div>
+    <button class="nav-item" :class="page==='pipeline'&&'active'" @click="page='pipeline';loadPipeline()">
+      <i class="ti ti-player-play"></i> Pipeline
+    </button>
+    <button class="nav-item" :class="page==='queue'&&'active'" @click="page='queue';loadQueue()">
+      <i class="ti ti-stack"></i> CRM Queue
+      <span x-show="queue.pending>0" x-text="queue.pending" style="margin-left:auto;background:#f59e0b;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px"></span>
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div style="font-size:12px;color:var(--muted);display:flex;align-items:center">
+      <span class="status-dot" :class="!apiOk&&'red'"></span>
+      <span x-text="apiOk?'API connected':'API offline'"></span>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" x-text="stats.last_run?'Last run: '+fmtDate(stats.last_run.run_at):'No runs yet'"></div>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div style="font-size:15px;font-weight:600;flex:1" x-text="pageTitles[page]"></div>
+    <button class="btn btn-primary" @click="triggerPipeline()" :disabled="triggering">
+      <span x-show="triggering" class="spinner" style="width:14px;height:14px;border-width:2px"></span>
+      <i x-show="!triggering" class="ti ti-player-play"></i>
+      <span x-text="triggering?'Running...':'Run Pipeline Now'"></span>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div x-show="page==='dashboard'">
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Total tenders</div>
+          <div class="metric-value" x-text="stats.total_all_time??'—'"></div>
+          <div class="metric-sub">all time</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">New this week</div>
+          <div class="metric-value" x-text="stats.new_this_week??'—'"></div>
+          <div class="metric-sub">last 7 days</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Closing soon</div>
+          <div class="metric-value" style="color:#ef4444" x-text="stats.closing_soon??'—'"></div>
+          <div class="metric-sub">within 14 days</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">CRM synced</div>
+          <div class="metric-value" x-text="stats.attio_synced??'—'"></div>
+          <div class="metric-sub">pushed to CRM</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <!-- By Tier -->
+        <div class="card">
+          <div class="section-title">This week by tier</div>
+          <template x-if="stats.by_tier&&stats.by_tier.length">
+            <div>
+              <template x-for="t in stats.by_tier" :key="t.priority">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                  <span :class="tierBadge(t.priority)" class="badge" x-text="t.priority" style="min-width:140px;text-align:center"></span>
+                  <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+                    <div style="height:100%;background:var(--accent);border-radius:3px" :style="'width:'+Math.round(t.count/Math.max(...stats.by_tier.map(x=>x.count))*100)+'%'"></div>
+                  </div>
+                  <span style="font-size:13px;font-weight:600;min-width:24px;text-align:right" x-text="t.count"></span>
+                </div>
+              </template>
+            </div>
+          </template>
+          <template x-if="!stats.by_tier||!stats.by_tier.length">
+            <div class="empty-state"><i class="ti ti-chart-bar"></i>No data yet</div>
+          </template>
+        </div>
+
+        <!-- By Portal -->
+        <div class="card">
+          <div class="section-title">Sources this week</div>
+          <template x-if="stats.by_portal&&stats.by_portal.length">
+            <div>
+              <template x-for="p in stats.by_portal" :key="p.source_portal">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                  <span :class="portalBadge(p.source_portal)" class="badge" x-text="p.source_portal" style="min-width:110px;text-align:center"></span>
+                  <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+                    <div style="height:100%;background:var(--accent);border-radius:3px" :style="'width:'+Math.round(p.count/Math.max(...stats.by_portal.map(x=>x.count))*100)+'%'"></div>
+                  </div>
+                  <span style="font-size:13px;font-weight:600;min-width:24px;text-align:right" x-text="p.count"></span>
+                </div>
+              </template>
+            </div>
+          </template>
+          <template x-if="!stats.by_portal||!stats.by_portal.length">
+            <div class="empty-state"><i class="ti ti-chart-pie"></i>No data yet</div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Closing soon preview -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div class="section-title" style="margin:0">Closing within 14 days</div>
+          <button class="btn btn-sm" @click="page='closing';loadClosing()">View all <i class="ti ti-arrow-right"></i></button>
+        </div>
+        <template x-if="closingPreview.length">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Tender</th><th>Issuer</th><th>Closing</th><th>Priority</th><th>Office</th>
+              </tr></thead>
+              <tbody>
+                <template x-for="t in closingPreview.slice(0,5)" :key="t.solicitation_id">
+                  <tr @click="openTender(t.solicitation_id)">
+                    <td style="max-width:240px"><div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="t.name"></div></td>
+                    <td style="color:var(--muted)" x-text="t.end_client||'—'"></td>
+                    <td style="white-space:nowrap;color:#ef4444;font-weight:500" x-text="fmtDate(t.closing_date)"></td>
+                    <td><span :class="tierBadge(t.priority)" class="badge" x-text="t.priority||'—'"></span></td>
+                    <td style="color:var(--muted)" x-text="t.office||'—'"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </template>
+        <template x-if="!closingPreview.length">
+          <div class="empty-state"><i class="ti ti-circle-check"></i>No tenders closing soon</div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ── TENDERS ── -->
+    <div x-show="page==='tenders'">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <i class="ti ti-search"></i>
+          <input type="text" placeholder="Search tenders or issuers..." x-model="filters.search" @input.debounce.400ms="loadTenders()">
+        </div>
+        <select x-model="filters.priority" @change="loadTenders()">
+          <option value="">All tiers</option>
+          <option>Strategic</option>
+          <option>Tier 1 - Pursue</option>
+          <option>Tier 2 - Prospect</option>
+          <option>Tier 3 - Potential</option>
+          <option>Tier 4 - Unlikely</option>
+        </select>
+        <select x-model="filters.source" @change="loadTenders()">
+          <option value="">All portals</option>
+          <option>MERX</option>
+          <option>BidNet Direct</option>
+          <option>BidPrime</option>
+          <option>CanadaBuys</option>
+        </select>
+        <select x-model="filters.office" @change="loadTenders()">
+          <option value="">All offices</option>
+          <option>Toronto</option>
+          <option>New York</option>
+          <option>West Coast</option>
+        </select>
+        <button class="btn btn-sm" @click="resetFilters()"><i class="ti ti-x"></i> Clear</button>
+      </div>
+
+      <div class="card" style="padding:0">
+        <div x-show="loadingTenders" class="loading-center"><div class="spinner"></div></div>
+        <template x-if="!loadingTenders">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Tender</th><th>Issuer</th><th>Portal</th>
+                <th>Score</th><th>Tier</th><th>Closing</th><th>Office</th><th></th>
+              </tr></thead>
+              <tbody>
+                <template x-for="t in tenders" :key="t.id">
+                  <tr @click="openTender(t.id)">
+                    <td style="max-width:260px">
+                      <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="t.name||'Untitled'"></div>
+                      <div style="font-size:11px;color:var(--muted)" x-text="t.sector||''"></div>
+                    </td>
+                    <td style="color:var(--muted);white-space:nowrap" x-text="t.end_client||'—'"></td>
+                    <td><span :class="portalBadge(t.source_portal)" class="badge" x-text="t.source_portal||'—'"></span></td>
+                    <td>
+                      <div class="score-wrap">
+                        <div class="score-bar"><div class="score-fill" :style="'width:'+((t.score||0))+'%'"></div></div>
+                        <span class="score-num" x-text="t.score||0"></span>
+                      </div>
+                    </td>
+                    <td><span :class="tierBadge(t.priority)" class="badge" x-text="t.priority||'—'"></span></td>
+                    <td style="white-space:nowrap" :style="daysLeft(t.closing_date)<7?'color:#ef4444;font-weight:500':''" x-text="fmtDate(t.closing_date)"></td>
+                    <td style="color:var(--muted)" x-text="t.office||'—'"></td>
+                    <td><i class="ti ti-chevron-right" style="color:var(--muted)"></i></td>
+                  </tr>
+                </template>
+                <template x-if="!tenders.length">
+                  <tr><td colspan="8"><div class="empty-state"><i class="ti ti-file-off"></i>No tenders match your filters</div></td></tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </template>
+        <div class="pagination" style="padding:12px 16px">
+          <span class="page-info" x-text="'Showing '+(tendersOffset+1)+' – '+Math.min(tendersOffset+tenders.length,tendersTotal)+' of '+tendersTotal"></span>
+          <button class="btn btn-sm" @click="prevPage()" :disabled="tendersOffset===0"><i class="ti ti-chevron-left"></i></button>
+          <button class="btn btn-sm" @click="nextPage()" :disabled="tendersOffset+50>=tendersTotal"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CLOSING SOON ── -->
+    <div x-show="page==='closing'">
+      <div x-show="closingPreview.length>0" class="alert alert-warning" style="margin-bottom:16px">
+        <i class="ti ti-alert-triangle"></i> <strong x-text="closingPreview.length"></strong> tenders closing within 14 days — review and action immediately.
+      </div>
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Tender</th><th>Issuer</th><th>Tier</th><th>Closing date</th><th>Office</th><th>Link</th>
+            </tr></thead>
+            <tbody>
+              <template x-for="t in closingPreview" :key="t.solicitation_id">
+                <tr @click="openTender(t.solicitation_id)">
+                  <td style="max-width:280px;font-weight:500" x-text="t.name"></td>
+                  <td style="color:var(--muted)" x-text="t.end_client||'—'"></td>
+                  <td><span :class="tierBadge(t.priority)" class="badge" x-text="t.priority||'—'"></span></td>
+                  <td style="color:#ef4444;font-weight:500" x-text="fmtDate(t.closing_date)"></td>
+                  <td style="color:var(--muted)" x-text="t.office||'—'"></td>
+                  <td @click.stop>
+                    <a :href="t.details_url" target="_blank" class="btn btn-sm" x-show="t.details_url">
+                      <i class="ti ti-external-link"></i> Open
+                    </a>
+                  </td>
+                </tr>
+              </template>
+              <template x-if="!closingPreview.length">
+                <tr><td colspan="6"><div class="empty-state"><i class="ti ti-circle-check"></i>No tenders closing soon</div></td></tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PIPELINE ── -->
+    <div x-show="page==='pipeline'">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+        <!-- Quick actions -->
+        <div class="card">
+          <div class="section-title">Quick actions</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn" @click="triggerSkill('scrape-state-portals')" :disabled="triggering">
+              <i class="ti ti-player-play"></i> Run CanadaBuys scraper
+            </button>
+            <button class="btn" @click="triggerSkill('scrape-sap-ariba-jaggaer')" :disabled="triggering">
+              <i class="ti ti-player-play"></i> Run MERX + BidNet scraper
+            </button>
+            <button class="btn" @click="triggerSkill('scrape-aggregators')" :disabled="triggering">
+              <i class="ti ti-player-play"></i> Run BidPrime email parser
+            </button>
+            <button class="btn" @click="triggerSkill('rfp-report')" :disabled="triggering">
+              <i class="ti ti-file-spreadsheet"></i> Generate Excel report now
+            </button>
+            <button class="btn btn-primary" @click="triggerPipeline()" :disabled="triggering">
+              <i class="ti ti-rocket"></i> Run full pipeline
+            </button>
+          </div>
+        </div>
+
+        <!-- Cron jobs -->
+        <div class="card">
+          <div class="section-title">Scheduled jobs</div>
+          <template x-if="cronJobs.jobs&&cronJobs.jobs.length">
+            <div>
+              <template x-for="job in cronJobs.jobs" :key="job.name">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+                  <span class="status-dot" :class="job.status!=='active'&&'red'"></span>
+                  <div style="flex:1">
+                    <div style="font-weight:500;font-size:13px" x-text="job.name"></div>
+                    <div style="font-size:11px;color:var(--muted)" x-text="job.schedule"></div>
+                  </div>
+                  <button class="btn btn-sm btn-danger" x-show="job.status==='active'" @click="pauseCron(job.name)">Pause</button>
+                  <button class="btn btn-sm" x-show="job.status!=='active'" @click="resumeCron(job.name)">Resume</button>
+                </div>
+              </template>
+            </div>
+          </template>
+          <template x-if="!cronJobs.jobs||!cronJobs.jobs.length">
+            <div class="empty-state" style="padding:30px 0"><i class="ti ti-calendar-off"></i>No cron jobs registered yet</div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Run history -->
+      <div class="card">
+        <div class="section-title">Pipeline run history</div>
+        <template x-if="pipelineRuns.length">
+          <div>
+            <template x-for="run in pipelineRuns" :key="run.id">
+              <div class="run-row">
+                <div class="run-date">
+                  <div class="run-date-main" x-text="fmtDate(run.run_at)"></div>
+                  <div class="run-date-sub" x-text="fmtTime(run.run_at)"></div>
+                </div>
+                <div class="run-stat">
+                  <div class="run-stat-num" x-text="run.total_scraped||0"></div>
+                  <div class="run-stat-label">scraped</div>
+                </div>
+                <div class="run-stat">
+                  <div class="run-stat-num" x-text="run.new_after_dedup||0"></div>
+                  <div class="run-stat-label">new</div>
+                </div>
+                <div class="run-stat">
+                  <div class="run-stat-num" x-text="run.excluded_count||0"></div>
+                  <div class="run-stat-label">excluded</div>
+                </div>
+                <div class="run-stat">
+                  <div class="run-stat-num" x-text="run.attio_synced||0"></div>
+                  <div class="run-stat-label">synced</div>
+                </div>
+                <div class="run-stat" x-show="run.duration_seconds">
+                  <div class="run-stat-num" x-text="run.duration_seconds?run.duration_seconds+'s':'—'"></div>
+                  <div class="run-stat-label">duration</div>
+                </div>
+                <div x-show="run.errors&&run.errors.length" style="color:#ef4444;font-size:12px"><i class="ti ti-alert-triangle"></i> Errors</div>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template x-if="!pipelineRuns.length">
+          <div class="empty-state"><i class="ti ti-history"></i>No pipeline runs recorded yet</div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ── QUEUE ── -->
+    <div x-show="page==='queue'">
+      <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+        <div class="metric">
+          <div class="metric-label">Total queued</div>
+          <div class="metric-value" x-text="queue.total||0"></div>
+          <div class="metric-sub">all records</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Pending sync</div>
+          <div class="metric-value" style="color:#f59e0b" x-text="queue.pending||0"></div>
+          <div class="metric-sub">waiting for Attio key</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Already synced</div>
+          <div class="metric-value" style="color:#22c55e" x-text="queue.synced||0"></div>
+          <div class="metric-sub">pushed to Attio</div>
+        </div>
+      </div>
+
+      <template x-if="queue.pending>0">
+        <div class="alert alert-warning" style="margin-bottom:16px">
+          <i class="ti ti-clock"></i> <strong x-text="queue.pending"></strong> records are waiting for the Attio API key. Once your manager provides it, add it to <code>~/.hermes/.env</code> and run <strong>/attio-sync-queue</strong>.
+        </div>
+      </template>
+      <template x-if="queue.pending===0&&queue.total>0">
+        <div class="alert alert-info" style="margin-bottom:16px">
+          <i class="ti ti-circle-check"></i> All records have been synced to Attio.
+        </div>
+      </template>
+
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Tender</th><th>Portal</th><th>Score</th><th>Tier</th><th>Closing</th><th>Queued at</th>
+            </tr></thead>
+            <tbody>
+              <template x-for="r in queue.records" :key="r.solicitation_id">
+                <tr>
+                  <td style="max-width:260px;font-weight:500" x-text="r.name||r.solicitation_id"></td>
+                  <td><span :class="portalBadge(r.source_portal)" class="badge" x-text="r.source_portal||'—'"></span></td>
+                  <td>
+                    <div class="score-wrap">
+                      <div class="score-bar"><div class="score-fill" :style="'width:'+((r.score||0))+'%'"></div></div>
+                      <span class="score-num" x-text="r.score||0"></span>
+                    </div>
+                  </td>
+                  <td><span :class="tierBadge(r.priority)" class="badge" x-text="r.priority||'—'"></span></td>
+                  <td x-text="fmtDate(r.closing_date)"></td>
+                  <td style="color:var(--muted);font-size:12px" x-text="fmtDate(r.queued_at)"></td>
+                </tr>
+              </template>
+              <template x-if="!queue.records||!queue.records.length">
+                <tr><td colspan="6"><div class="empty-state"><i class="ti ti-stack"></i>Queue is empty</div></td></tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- Tender Detail Modal -->
+<div class="modal-overlay" x-show="modalOpen" x-cloak @click.self="modalOpen=false">
+  <div class="modal" x-show="modalOpen">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:4px" x-text="selectedTender.name||'—'"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <span :class="tierBadge(selectedTender.priority)" class="badge" x-text="selectedTender.priority||'—'"></span>
+          <span :class="portalBadge(selectedTender.source_portal)" class="badge" x-text="selectedTender.source_portal||'—'"></span>
+          <span class="badge" style="background:var(--bg)" x-text="'Score: '+(selectedTender.score||0)+'/100'"></span>
+        </div>
+      </div>
+      <button class="modal-close" @click="modalOpen=false"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-label">Issuing org</div>
+          <div class="detail-value" x-text="selectedTender.end_client||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Solicitation ID</div>
+          <div class="detail-value" x-text="selectedTender.solicitation_id||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Closing date</div>
+          <div class="detail-value" style="color:#ef4444;font-weight:500" x-text="fmtDate(selectedTender.closing_date)"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Questions deadline</div>
+          <div class="detail-value" x-text="fmtDate(selectedTender.questions_deadline)||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Sector</div>
+          <div class="detail-value" x-text="selectedTender.sector||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Office</div>
+          <div class="detail-value" x-text="selectedTender.office||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Location</div>
+          <div class="detail-value" x-text="selectedTender.country||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Contract type</div>
+          <div class="detail-value" x-text="selectedTender.contract_type||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Budget (CAD)</div>
+          <div class="detail-value" x-text="selectedTender.project_value_cad?'$'+Number(selectedTender.project_value_cad).toLocaleString():'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Budget (USD)</div>
+          <div class="detail-value" x-text="selectedTender.project_value_usd?'$'+Number(selectedTender.project_value_usd).toLocaleString():'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Submission channel</div>
+          <div class="detail-value" x-text="selectedTender.submission_channel||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">CRM synced</div>
+          <div class="detail-value" x-text="selectedTender.attio_record_id?'Yes — '+selectedTender.attio_record_id:'Not yet synced'"></div>
+        </div>
+      </div>
+
+      <!-- Scope tags -->
+      <div class="detail-item" style="grid-column:span 2;margin-top:4px">
+        <div class="detail-label">Scope</div>
+        <div style="margin-top:4px">
+          <template x-if="selectedTender.scope&&selectedTender.scope.length">
+            <div><template x-for="s in selectedTender.scope" :key="s"><span class="tag" x-text="s"></span></template></div>
+          </template>
+          <span x-if="!selectedTender.scope||!selectedTender.scope.length" style="color:var(--muted)">—</span>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div x-show="selectedTender.notes" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="detail-label" style="margin-bottom:6px">Notes</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--muted)" x-text="selectedTender.notes"></div>
+      </div>
+
+      <!-- Flags -->
+      <div x-show="selectedTender.red_flags&&selectedTender.red_flags.length" style="margin-top:12px;padding:10px 14px;background:#fef2f2;border-radius:8px;border:1px solid #fecaca">
+        <div style="font-size:12px;font-weight:600;color:#991b1b;margin-bottom:4px"><i class="ti ti-alert-triangle"></i> Red flags</div>
+        <template x-for="f in (selectedTender.red_flags||[])" :key="f">
+          <div style="font-size:12px;color:#991b1b" x-text="f"></div>
+        </template>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <a :href="selectedTender.details_url" target="_blank" class="btn btn-primary" x-show="selectedTender.details_url">
+          <i class="ti ti-external-link"></i> Open on portal
+        </a>
+        <button class="btn" @click="modalOpen=false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" x-show="toast" x-text="toast" x-cloak style="display:none"></div>
+
+<script>
+function app() {
+  return {
+    page: 'dashboard',
+    pageTitles: {
+      dashboard: 'Dashboard',
+      tenders:   'All Tenders',
+      closing:   'Closing Soon',
+      pipeline:  'Pipeline Control',
+      queue:     'CRM Queue',
+    },
+    apiOk: true,
+    stats: {},
+    tenders: [], loadingTenders: false,
+    tendersTotal: 0, tendersOffset: 0,
+    closingPreview: [],
+    pipelineRuns: [], cronJobs: {},
+    queue: { total:0, pending:0, synced:0, records:[] },
+    filters: { search:'', priority:'', source:'', office:'' },
+    modalOpen: false, selectedTender: {},
+    triggering: false,
+    toast: null, toastTimer: null,
+
+    async init() {
+      await this.loadStats();
+      await this.loadClosing();
+    },
+
+    async api(path) {
+      try {
+        const r = await fetch('/api' + path);
+        this.apiOk = r.ok;
+        return r.ok ? r.json() : null;
+      } catch { this.apiOk = false; return null; }
+    },
+
+    async post(path) {
+      try {
+        const r = await fetch('/api' + path, { method:'POST' });
+        return r.ok ? r.json() : null;
+      } catch { return null; }
+    },
+
+    async loadStats() {
+      const d = await this.api('/stats/summary');
+      if (d) this.stats = d;
+    },
+
+    async loadTenders() {
+      this.loadingTenders = true;
+      const p = new URLSearchParams({ limit:50, offset:this.tendersOffset });
+      if (this.filters.search)   p.set('search',   this.filters.search);
+      if (this.filters.priority) p.set('priority',  this.filters.priority);
+      if (this.filters.source)   p.set('source',    this.filters.source);
+      if (this.filters.office)   p.set('office',    this.filters.office);
+      const d = await this.api('/tenders/?' + p);
+      if (d) { this.tenders = d.data; this.tendersTotal = d.total; }
+      this.loadingTenders = false;
+    },
+
+    async loadClosing() {
+      const d = await this.api('/tenders/closing-soon');
+      if (d) this.closingPreview = d;
+    },
+
+    async loadPipeline() {
+      const [runs, cron] = await Promise.all([
+        this.api('/pipeline/runs'),
+        this.api('/pipeline/cron'),
+      ]);
+      if (runs) this.pipelineRuns = runs;
+      if (cron) this.cronJobs = cron;
+    },
+
+    async loadQueue() {
+      const d = await this.api('/queue/');
+      if (d) this.queue = d;
+    },
+
+    async openTender(id) {
+      const d = await this.api('/tenders/' + id);
+      if (d) { this.selectedTender = d; this.modalOpen = true; }
+    },
+
+    async triggerPipeline() {
+      this.triggering = true;
+      await this.post('/pipeline/trigger');
+      this.showToast('Pipeline started! Check Slack for progress updates.');
+      setTimeout(() => this.triggering = false, 3000);
+    },
+
+    async triggerSkill(skill) {
+      this.triggering = true;
+      await this.post('/pipeline/trigger/' + skill);
+      this.showToast(skill + ' triggered successfully.');
+      setTimeout(() => this.triggering = false, 2000);
+    },
+
+    async pauseCron(name) {
+      await this.post('/pipeline/cron/' + name + '/pause');
+      this.showToast(name + ' paused.');
+      this.loadPipeline();
+    },
+
+    async resumeCron(name) {
+      await this.post('/pipeline/cron/' + name + '/resume');
+      this.showToast(name + ' resumed.');
+      this.loadPipeline();
+    },
+
+    resetFilters() {
+      this.filters = { search:'', priority:'', source:'', office:'' };
+      this.tendersOffset = 0;
+      this.loadTenders();
+    },
+
+    nextPage() { this.tendersOffset += 50; this.loadTenders(); },
+    prevPage() { this.tendersOffset = Math.max(0, this.tendersOffset - 50); this.loadTenders(); },
+
+    showToast(msg) {
+      this.toast = msg;
+      clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => this.toast = null, 3500);
+    },
+
+    tierBadge(p) {
+      if (!p) return '';
+      if (p === 'Strategic')          return 'badge-strategic';
+      if (p === 'Tier 1 - Pursue')    return 'badge-t1';
+      if (p === 'Tier 2 - Prospect')  return 'badge-t2';
+      if (p === 'Tier 3 - Potential') return 'badge-t3';
+      return 'badge-t4';
+    },
+
+    portalBadge(p) {
+      if (!p) return '';
+      if (p === 'MERX')          return 'badge-merx';
+      if (p === 'BidNet Direct') return 'badge-bidnet';
+      if (p === 'BidPrime')      return 'badge-bidprime';
+      if (p === 'CanadaBuys')    return 'badge-canada';
+      return '';
+    },
+
+    fmtDate(d) {
+      if (!d) return '—';
+      return new Date(d).toLocaleDateString('en-CA', { year:'numeric', month:'short', day:'numeric' });
+    },
+
+    fmtTime(d) {
+      if (!d) return '';
+      return new Date(d).toLocaleTimeString('en-CA', { hour:'2-digit', minute:'2-digit' });
+    },
+
+    daysLeft(d) {
+      if (!d) return 999;
+      return Math.ceil((new Date(d) - new Date()) / 86400000);
+    },
+  };
+}
+</script>
+</body>
+</html>

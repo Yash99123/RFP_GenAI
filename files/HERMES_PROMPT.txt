@@ -1,0 +1,210 @@
+HERMES PROMPT — EITACIES RFP GENAI
+====================================
+Copy and paste everything below this line into Hermes:
+------------------------------------------------------------
+
+You are a full stack engineer setting up the EITACIES RFP GenAI automation
+system on my local Mac. The project lives at:
+/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI
+
+Follow every step in order. Fix any errors before moving on.
+
+STEP 1 — Create all required folders:
+mkdir -p "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/backend/routes"
+mkdir -p "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/frontend"
+mkdir -p "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/exports/raw"
+mkdir -p "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/exports/parsed"
+mkdir -p "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/exports/queue"
+mkdir -p "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/exports/weekly"
+mkdir -p "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/exports/logs"
+
+STEP 2 — Write the .env file at:
+/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/.env
+
+With this exact content:
+---
+OPENROUTER_API_KEY=
+FIRECRAWL_API_KEY=fc-e4c24b6bd274435b837cbbefa05ba0f2
+DATABASE_URL=postgresql://postgres:CarbonDioxide@co2@db.mdsrozoyssgvwmfumccz.supabase.co:5432/postgres
+CLOUDFLARE_R2_ENDPOINT=https://b83bf15d7f77017d374d569f83031714.r2.cloudflarestorage.com
+CLOUDFLARE_R2_BUCKET=rfp-genai
+AWS_ACCESS_KEY_ID=73505a31fdcbc5d7e5a91b571f396290
+AWS_SECRET_ACCESS_KEY=ce61aeaec80f366ffe6323d47d8ad9398113afbec61c3351d43231b14a7e2c77
+SAM_GOV_USERNAME=bdm@eitacies.com
+SAM_GOV_PASSWORD=Eita567890$%
+SAP_ARIBA_USERNAME=bdm@eitacies.com
+SAP_ARIBA_PASSWORD=Eita13579$%
+BIDNET_DIRECT_USERNAME=bdm@eitacies.com
+BIDNET_DIRECT_PASSWORD=Eita567890$%
+BIDPRIME_USERNAME=bdm@eitacies.com
+BIDPRIME_PASSWORD=Eita567890$%
+JAGGAER_SUPPLIER_USERNAME=bdm@eitacies.com
+JAGGAER_SUPPLIER_PASSWORD=EiTa567890$%
+MONTANA_GOV_JAGGAER_USERNAME=bdm@eitacies.com
+MONTANA_GOV_JAGGAER_PASSWORD=EiTa4567890$%
+MONTANA_EMACS_USERNAME=bdm@eitacies.com
+MONTANA_EMACS_PASSWORD=EiTasmart13579$%
+JAGGAER_MINNESOTA_USERNAME=bdm@eitacies.com
+JAGGAER_MINNESOTA_PASSWORD=EiTa0246813579$%
+EMACS_USERNAME=bdm@eitacies.com
+EMACS_PASSWORD=Eitajagg567890$%
+UNIVERSITY_OF_MINNESOTA_USERNAME=bdm@eitacies.com
+UNIVERSITY_OF_MINNESOTA_PASSWORD=EiTasmart13579$%
+UNIVERSITY_OF_IOWA_USERNAME=eita123
+UNIVERSITY_OF_IOWA_PASSWORD=Eita1357924680$%
+BONFIRE_USERNAME=bdm@eitacies.com
+BONFIRE_PASSWORD=Eita567890$%
+OPENGOV_USERNAME=bdm@eitacies.com
+OPENGOV_PASSWORD=Eita567890$%
+CAL_E_PROCURE_USERNAME=eitacies
+CAL_E_PROCURE_PASSWORD=Pathenryeita2367$%
+MYFLORIDA_USERNAME=eitacies
+MYFLORIDA_PASSWORD=Eita5687$%
+PRISM_USERNAME=eitacies01
+PRISM_PASSWORD=Eita7890$%
+FLORIDA_PRORFX_USERNAME=bdm@eitacies.com
+FLORIDA_PRORFX_PASSWORD=Eita567890$%
+STATE_OF_LOUISIANA_LAGOV_USERNAME=V31027852201
+STATE_OF_LOUISIANA_LAGOV_PASSWORD=Eita7890$%
+COMMBUYS_USERNAME=bdm@eitacies.com
+COMMBUYS_PASSWORD=Eita4567890$%
+VERMONT_DEPARTMENT_USERNAME=bdm@eitacies.com
+VERMONT_DEPARTMENT_PASSWORD=Eita7890$%
+SUPPLIERCLEARINGHOUSE_USERNAME=bdm@eitacies.com
+SUPPLIERCLEARINGHOUSE_PASSWORD=Eita567890$%
+CITY_OF_LOS_ANGELES_USERNAME=bdm@eitacies.com
+CITY_OF_LOS_ANGELES_PASSWORD=Eita123456$%
+LOS_ANGELES_USD_USERNAME=bdm@eitacies.com
+LOS_ANGELES_USD_PASSWORD=Eita7890$%
+CITY_OF_BURBANK_USERNAME=bdm@eitacies.com
+CITY_OF_BURBANK_PASSWORD=Eita7890$%
+CITY_OF_SUNNYVALE_USERNAME=bdm@eitacies.com
+CITY_OF_SUNNYVALE_PASSWORD=Eita7890$%
+CITY_OF_CINCINNATI_USERNAME=eitacies
+CITY_OF_CINCINNATI_PASSWORD=Eita7890$%
+BROWARD_ORG_USERNAME=bdm@eitacies.com
+BROWARD_ORG_PASSWORD=Eita7890$%
+CHICAGO_PUBLIC_SCHOOLS_USERNAME=bdm@eitacies.com
+CHICAGO_PUBLIC_SCHOOLS_PASSWORD=Eita7890$%
+ANGELENO_RAMP_USERNAME=bdm@eitacies.com
+ANGELENO_RAMP_PASSWORD=Eita7890$%^&
+TEXAS_DOT_USERNAME=bdm@eitacies.com
+TEXAS_DOT_PASSWORD=Eita7890$%
+TIPS_USERNAME=bdm@eitacies.com
+TIPS_PASSWORD=Eita12227890$%
+DELANO_USERNAME=bdm@eitacies.com
+DELANO_PASSWORD=Eita7890$%
+FALMOUTH_USERNAME=bdm@eitacies.com
+FALMOUTH_PASSWORD=Eita7890$%
+CITY_OF_ASHLAND_OREGON_USERNAME=Thiruvalluvan
+CITY_OF_ASHLAND_OREGON_PASSWORD=Eita7890$%
+CIVIC_PLUS_USERNAME=bdm@eitacies.com
+CIVIC_PLUS_PASSWORD=Eita12345$%
+PACIFIC_NORTHWEST_USERNAME=bdm@eitacies.com
+PACIFIC_NORTHWEST_PASSWORD=Eita7890$%
+USDA_USERNAME=bdm@eitacies.com
+USDA_PASSWORD=Eita567890$%
+PLANET_BIDS_USERNAME=bdm@eitacies.com
+PLANET_BIDS_PASSWORD=Eita7890$%
+CENTRAL_BIDDING_USERNAME=eitacies
+CENTRAL_BIDDING_PASSWORD=Eita7890$%
+PUBLIC_PURCHASE_USERNAME=eitacies
+PUBLIC_PURCHASE_PASSWORD=Eita7890$%
+UNISON_MARKETPLACE_USERNAME=bdm@eitacies.com
+UNISON_MARKETPLACE_PASSWORD=Eita7890$%
+RFP_DELIVERY_USERNAME=bdm@eitacies.com
+RFP_DELIVERY_PASSWORD=Eita567890$%
+RFP_MART_USERNAME=bdm@eitacies.com
+RFP_MART_PASSWORD=Eita567890$%
+COVENDIS_USERNAME=bdm@eitacies.com
+COVENDIS_PASSWORD=EiTa567890$%
+INGRAM_USERNAME=bdm@eitacies.com
+INGRAM_PASSWORD=Eita7890$%
+BIDS_AND_TENDERS_USERNAME=bdm@eitacies.com
+BIDS_AND_TENDERS_PASSWORD=EIta567890$%
+KAWARTHA_LAKES_USERNAME=bdm@eitacies.com
+KAWARTHA_LAKES_PASSWORD=EIta7890$%
+CITY_OF_WATERLOO_USERNAME=bdm@eitacies.com
+CITY_OF_WATERLOO_PASSWORD=EIta567890$%
+VENDOR_REGISTRY_USERNAME=bdm@eitacies.com
+VENDOR_REGISTRY_PASSWORD=Eita7890$%
+VENDOR_REGISTRY_OKALOOSA_USERNAME=bdm@eitacies.com
+VENDOR_REGISTRY_OKALOOSA_PASSWORD=Eita7890$%
+EI_COOPERATIVE_USERNAME=bdm@eitacies.com
+EI_COOPERATIVE_PASSWORD=Eita7890$%
+---
+
+STEP 3 — Copy all project files from the downloaded package into:
+/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/
+
+Confirm these files exist after copying:
+- backend/main.py
+- backend/database.py
+- backend/requirements.txt
+- backend/routes/__init__.py
+- backend/routes/tenders.py
+- backend/routes/pipeline.py
+- backend/routes/queue.py
+- backend/routes/stats.py
+- frontend/index.html
+- start-mac.sh
+
+If any file is missing, tell me which one and stop.
+
+STEP 4 — Install Python dependencies:
+cd "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI"
+pip3 install fastapi "uvicorn[standard]" psycopg2-binary python-dotenv python-multipart
+
+STEP 5 — Also install scraper dependencies:
+pip3 install playwright requests boto3 pdfplumber pandas openpyxl numpy python-dotenv
+playwright install chromium
+
+STEP 6 — Install all Hermes skill files:
+Copy all 8 .md skill files to ~/.hermes/skills/
+- rfp-pipeline.md
+- rfp-schema.md
+- scrape-sam-gov.md
+- scrape-sap-ariba-jaggaer.md
+- scrape-state-portals.md
+- scrape-city-portals.md
+- scrape-aggregators.md
+- rfp-score-filter.md
+- rfp-report.md
+
+Then verify: hermes chat -q "What skills do you have?"
+You should see all 9 skills listed.
+
+STEP 7 — Run db-init.sql in Supabase:
+Go to https://supabase.com -> open project db.mdsrozoyssgvwmfumccz
+-> SQL Editor -> paste the contents of db-init.sql -> Run
+Confirm tables: tenders, seen_ids, pipeline_runs
+
+STEP 8 — Test database connection:
+cd "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/backend"
+python3 -c "
+from database import query
+try:
+    r = query('SELECT COUNT(*) as n FROM tenders')
+    print('DB OK:', r[0]['n'], 'records')
+except Exception as e:
+    print('DB error:', e)
+"
+
+STEP 9 — Start the web dashboard:
+cd "/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/backend"
+python3 -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+
+STEP 10 — Verify it works:
+curl http://localhost:8000/health
+Expected: {"status":"ok","time":"..."}
+
+Then confirm: open http://localhost:8000 in browser.
+
+IMPORTANT: OPENROUTER_API_KEY is blank in .env.
+After starting, remind me to add it:
+"You need to add your OPENROUTER_API_KEY to the .env file.
+Get it at openrouter.ai -> Keys -> Create Key, then run:
+echo 'OPENROUTER_API_KEY=sk-or-YOUR-KEY' >> '/Users/yasha/Downloads/RFP_Automation_System/RFP GenAI/.env'"
+
+If anything fails, diagnose, fix, and continue.
+Do not stop until the /health endpoint returns {"status":"ok"}.
