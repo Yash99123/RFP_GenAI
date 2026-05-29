@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EITACIES — RFP GenAI Dashboard</title>
+<script src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js" defer></script>
+<link href="https://unpkg.com/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --border: #e5e3dc;
+    --text: #1a1a18; --muted: #6b6a64; --accent: #1a1a18;
+    --radius: 10px; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+  .sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; }
+  .main { margin-left: 220px; min-height: 100vh; }
+  .topbar { height: 56px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; position: sticky; top: 0; z-index: 50; }
+  .content { padding: 24px; }
+  .logo { padding: 20px 20px 8px; display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 15px; }
+  .logo-text { font-weight: 600; font-size: 15px; }
+  .logo-sub { font-size: 11px; color: var(--muted); }
+  .nav { padding: 8px 12px; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left; transition: all .15s; }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--accent); color: #fff; }
+  .nav-item i { font-size: 17px; }
+  .nav-section { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 12px 10px 4px; }
+  .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 6px; }
+  .status-dot.red { background: #ef4444; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .metric-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+  .metric-value { font-size: 28px; font-weight: 600; line-height: 1; }
+  .metric-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; background: var(--bg); }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--bg); cursor: pointer; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .badge-cat { background: #eff6ff; color: #1e40af; }
+  .badge-federal { background: #eff6ff; color: #1e40af; }
+  .badge-enterprise { background: #f5f3ff; color: #5b21b6; }
+  .badge-state { background: #f0fdf4; color: #166534; }
+  .badge-city { background: #fff7ed; color: #9a3412; }
+  .badge-aggregator { background: #fdf4ff; color: #7e22ce; }
+  .badge-education { background: #fefce8; color: #854d0e; }
+  .badge-niche { background: #f8f7f4; color: #6b6a64; }
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+  input[type=text], select { height: 36px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text); background: var(--surface); outline: none; font-family: var(--font); }
+  input[type=text] { padding: 0 12px 0 34px; width: 100%; }
+  select { padding: 0 10px; cursor: pointer; }
+  input[type=text]:focus, select:focus { border-color: var(--accent); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--font); transition: all .15s; }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { opacity: .88; }
+  .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .modal { background: var(--surface); border-radius: 14px; width: 100%; max-width: 720px; max-height: 88vh; overflow-y: auto; border: 1px solid var(--border); }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .modal-body { padding: 20px 24px; }
+  .modal-close { border: none; background: none; cursor: pointer; color: var(--muted); font-size: 20px; flex-shrink: 0; padding: 2px; }
+  .modal-close:hover { color: var(--text); }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+  .detail-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .detail-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 3px; }
+  .detail-value { font-size: 13px; color: var(--text); }
+  .summary-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin: 16px 0; font-size: 13px; line-height: 1.6; color: var(--text); }
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .empty-state { text-align: center; padding: 60px 0; color: var(--muted); }
+  .empty-state i { font-size: 40px; margin-bottom: 12px; display: block; }
+  .spinner { border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-center { display: flex; align-items: center; justify-content: center; padding: 60px; }
+  .pagination { display: flex; align-items: center; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+  .page-info { font-size: 13px; color: var(--muted); }
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  .alert-warning { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,.15); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .search-dropdown { position: relative; }
+  .search-dropdown-list { position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 10; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+  .search-dropdown-item { padding: 8px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .search-dropdown-item:last-child { border-bottom: none; }
+  .search-dropdown-item:hover { background: var(--bg); }
+  .search-dropdown-item .sd-name { font-weight: 500; }
+  .search-dropdown-item .sd-sub { font-size: 11px; color: var(--muted); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-row.full { grid-template-columns: 1fr; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; display: block; }
+  .form-input { width: 100%; height: 36px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; padding: 0 10px; font-family: var(--font); color: var(--text); background: var(--surface); outline: none; }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input.tall { height: 72px; padding: 8px 10px; resize: vertical; font-size: 13px; }
+</style>
+</head>
+<body x-data="app()" x-init="init()">
+
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">E</div>
+    <div>
+      <div class="logo-text">EITACIES</div>
+      <div class="logo-sub">RFP GenAI</div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-section">Main</div>
+    <button class="nav-item" :class="page==='dashboard'&&'active'" @click="page='dashboard'">
+      <i class="ti ti-layout-dashboard"></i> Dashboard
+    </button>
+    <button class="nav-item" :class="page==='tenders'&&'active'" @click="page='tenders';loadTenders()">
+      <i class="ti ti-file-description"></i> All Tenders
+    </button>
+    <div class="nav-section">Tracking</div>
+    <button class="nav-item" :class="page==='tracking'&&'active'" @click="page='tracking';loadTrackingSummary()">
+      <i class="ti ti-git-branch"></i> RFP Tracker
+    </button>
+    <div class="nav-section">Automation</div>
+    <button class="nav-item" :class="page==='pipeline'&&'active'" @click="page='pipeline';loadPipeline()">
+      <i class="ti ti-player-play"></i> Pipeline
+    </button>
+  </div>
+  <div class="sidebar-footer">
+    <div style="font-size:12px;color:var(--muted);display:flex;align-items:center">
+      <span class="status-dot" :class="!apiOk&&'red'"></span>
+      <span x-text="apiOk?'API connected':'API offline'"></span>
+    </div>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div style="font-size:15px;font-weight:600;flex:1" x-text="pageTitles[page]"></div>
+    <button class="btn btn-primary" @click="triggerPipeline()" :disabled="triggering">
+      <span x-show="triggering" class="spinner" style="width:14px;height:14px;border-width:2px"></span>
+      <i x-show="!triggering" class="ti ti-player-play"></i>
+      <span x-text="triggering?'Running...':'Run Pipeline Now'"></span>
+    </button>
+  </div>
+
+  <div class="content">
+    <!-- DASHBOARD -->
+    <div x-show="page==='dashboard'">
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Total tenders</div>
+          <div class="metric-value" x-text="stats.total_all_time??'—'"></div>
+          <div class="metric-sub">all time</div>
+        </div>
+        <div class="metric" style="cursor:pointer;border-left:3px solid #22c55e" @click="showNewToday()">
+          <div class="metric-label">New today</div>
+          <div class="metric-value" x-text="stats.new_today??'—'"></div>
+          <div class="metric-sub">added today <i class="ti ti-arrow-right" style="font-size:12px"></i></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Categories covered</div>
+          <div class="metric-value" x-text="stats.categories??'—'"></div>
+          <div class="metric-sub">unique categories</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="card">
+          <div class="section-title">By Category</div>
+          <template x-if="stats.by_category&&stats.by_category.length">
+            <div>
+              <template x-for="c in stats.by_category" :key="c.rfp_category">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                  <span class="badge badge-cat" x-text="c.rfp_category||'Uncategorized'" style="min-width:160px;text-align:center"></span>
+                  <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+                    <div style="height:100%;background:var(--accent);border-radius:3px" :style="'width:'+Math.round(c.count/Math.max(...stats.by_category.map(x=>x.count))*100)+'%'"></div>
+                  </div>
+                  <span style="font-size:13px;font-weight:600;min-width:24px;text-align:right" x-text="c.count"></span>
+                </div>
+              </template>
+            </div>
+          </template>
+          <template x-if="!stats.by_category||!stats.by_category.length">
+            <div class="empty-state"><i class="ti ti-chart-bar"></i>No data yet</div>
+          </template>
+        </div>
+        <div class="card">
+          <div class="section-title">By Portal</div>
+          <template x-if="stats.by_portal&&stats.by_portal.length">
+            <div>
+              <template x-for="p in stats.by_portal" :key="p.source_portal">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                  <span :class="portalBadge(p.source_portal)" class="badge" x-text="p.source_portal" style="min-width:110px;text-align:center"></span>
+                  <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+                    <div style="height:100%;background:var(--accent);border-radius:3px" :style="'width:'+Math.round(p.count/Math.max(...stats.by_portal.map(x=>x.count))*100)+'%'"></div>
+                  </div>
+                  <span style="font-size:13px;font-weight:600;min-width:24px;text-align:right" x-text="p.count"></span>
+                </div>
+              </template>
+            </div>
+          </template>
+          <template x-if="!stats.by_portal||!stats.by_portal.length">
+            <div class="empty-state"><i class="ti ti-chart-pie"></i>No data yet</div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- TENDERS -->
+    <div x-show="page==='tenders'">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <i class="ti ti-search"></i>
+          <input type="text" placeholder="Search tenders, issuers, or keywords..." x-model="filters.search" @input.debounce.400ms="loadTenders()">
+        </div>
+        <select x-model="filters.category" @change="loadTenders()">
+          <option value="">All categories</option>
+          <template x-for="cat in categories" :key="cat">
+            <option :value="cat" x-text="cat"></option>
+          </template>
+        </select>
+        <select x-model="filters.portal" @change="loadTenders()">
+          <option value="">All portals</option>
+          <template x-for="p in portals" :key="p">
+            <option :value="p" x-text="p"></option>
+          </template>
+        </select>
+        <select x-model="filters.status" @change="loadTenders()">
+          <option value="open">Open RFPs</option>
+          <option value="closed">Closed RFPs</option>
+          <option value="">All RFPs</option>
+        </select>
+        <button class="btn btn-sm" @click="resetFilters()"><i class="ti ti-x"></i> Clear</button>
+      </div>
+
+      <div class="card" style="padding:0">
+        <div x-show="loadingTenders" class="loading-center"><div class="spinner"></div></div>
+        <template x-if="!loadingTenders">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Category</th>
+                <th>Tender</th>
+                <th>Issuer</th>
+                <th>Portal</th>
+                <th style="cursor:pointer;user-select:none" @click="toggleSort('open_date')">Opening <span x-show="sort==='open_date'" x-text="sortOrder==='asc'?'▲':'▼'" style="font-size:10px"></span></th>
+                <th style="cursor:pointer;user-select:none" @click="toggleSort('closing_date')">Closing <span x-show="sort==='closing_date'" x-text="sortOrder==='asc'?'▲':'▼'" style="font-size:10px"></span></th>
+                <th>Office</th>
+                <th>Summary</th>
+                <th></th>
+              </tr></thead>
+              <tbody>
+                <template x-for="t in tenders" :key="t.id">
+                  <tr @click="openTender(t.id)">
+                    <td><span class="badge badge-cat" x-text="t.rfp_category||'—'" style="font-size:10px"></span></td>
+                    <td style="max-width:220px">
+                      <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="t.name||'Untitled'"></div>
+                    </td>
+                    <td style="color:var(--muted);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis" x-text="t.end_client||'—'"></td>
+                    <td><span :class="portalBadge(t.source_portal)" class="badge" x-text="t.source_portal||'—'"></span></td>
+                    <td style="font-size:12px">
+                      <template x-if="t.open_date">
+                        <span x-text="fmtDate(t.open_date)"></span>
+                      </template>
+                      <template x-if="!t.open_date">
+                        <span style="color:var(--muted);font-style:italic;font-size:11px" x-text="fmtDate(t.first_seen)"></span>
+                      </template>
+                    </td>
+                    <td style="font-size:12px">
+                      <template x-if="t.closing_date">
+                        <span>
+                          <span x-show="t.is_open===false" class="badge" style="background:#fef2f2;color:#991b1b;font-size:10px;margin-right:4px">Closed</span>
+                          <span :style="daysLeft(t.closing_date)<7?'color:#ef4444;font-weight:500':''" x-text="fmtDate(t.closing_date)"></span>
+                        </span>
+                      </template>
+                      <template x-if="!t.closing_date">
+                        <span style="color:var(--muted);font-style:italic;font-size:11px" x-text="t.closing_date_note||'Date not specified'"></span>
+                      </template>
+                    </td>
+                    <td style="color:var(--muted);font-size:12px" x-text="t.office||'—'"></td>
+                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--muted)" x-text="t.summary||'—'"></td>
+                    <td><i class="ti ti-chevron-right" style="color:var(--muted)"></i></td>
+                  </tr>
+                </template>
+                <template x-if="!tenders.length">
+                  <tr><td colspan="9"><div class="empty-state"><i class="ti ti-file-off"></i>No tenders match your filters</div></td></tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </template>
+        <div class="pagination" style="padding:12px 16px">
+          <span class="page-info" x-text="'Showing '+(tendersOffset+1)+' – '+Math.min(tendersOffset+tenders.length,tendersTotal)+' of '+tendersTotal"></span>
+          <button class="btn btn-sm" @click="prevPage()" :disabled="tendersOffset===0"><i class="ti ti-chevron-left"></i></button>
+          <button class="btn btn-sm" @click="nextPage()" :disabled="tendersOffset+50>=tendersTotal"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div x-show="page==='pipeline'">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+        <div class="card">
+          <div class="section-title">Quick actions</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn" @click="triggerSkill('scrape-sam-gov')" :disabled="triggering"><i class="ti ti-player-play"></i> Run SAM.gov scraper</button>
+            <button class="btn" @click="triggerSkill('scrape-aggregators')" :disabled="triggering"><i class="ti ti-player-play"></i> Run Aggregators scraper</button>
+            <button class="btn btn-primary" @click="triggerPipeline()" :disabled="triggering"><i class="ti ti-rocket"></i> Run full pipeline</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">Run history</div>
+          <template x-if="pipelineRuns.length">
+            <div>
+              <template x-for="run in pipelineRuns" :key="run.id">
+                <div style="display:flex;align-items:center;gap:16px;padding:10px 0;border-bottom:1px solid var(--border)">
+                  <div style="flex:1;font-size:13px"><span style="font-weight:500" x-text="fmtDate(run.run_at)"></span></div>
+                  <div style="text-align:center;min-width:50px"><div style="font-size:16px;font-weight:600" x-text="run.total_scraped||0"></div><div style="font-size:10px;color:var(--muted)">scraped</div></div>
+                  <div style="text-align:center;min-width:50px"><div style="font-size:16px;font-weight:600" x-text="run.new_after_dedup||0"></div><div style="font-size:10px;color:var(--muted)">new</div></div>
+                  <div style="text-align:center;min-width:50px" x-show="run.duration_seconds"><div style="font-size:16px;font-weight:600" x-text="run.duration_seconds?run.duration_seconds+'s':'—'"></div><div style="font-size:10px;color:var(--muted)">time</div></div>
+                </div>
+              </template>
+            </div>
+          </template>
+          <template x-if="!pipelineRuns.length">
+            <div class="empty-state" style="padding:30px 0"><i class="ti ti-history"></i>No runs yet</div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACKING -->
+    <div x-show="page==='tracking'">
+      <!-- Status Summary Cards + Add Button -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+        <div style="flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:16px">
+          <div class="metric" style="cursor:pointer;border-left:3px solid #6b7280" @click="loadTrackingStatus('new')">
+            <div class="metric-label">New</div>
+            <div class="metric-value" x-text="trackingSummary.new||0"></div>
+            <div class="metric-sub">Needs review</div>
+          </div>
+          <div class="metric" style="cursor:pointer;border-left:3px solid #3b82f6" @click="loadTrackingStatus('identified')">
+            <div class="metric-label">Identified</div>
+            <div class="metric-value" x-text="trackingSummary.identified||0"></div>
+            <div class="metric-sub">Accepted RFPs</div>
+          </div>
+          <div class="metric" style="cursor:pointer;border-left:3px solid #22c55e" @click="loadTrackingStatus('active')">
+            <div class="metric-label">Active</div>
+            <div class="metric-value" x-text="trackingSummary.active||0"></div>
+            <div class="metric-sub">Pursuing</div>
+          </div>
+          <div class="metric" style="cursor:pointer;border-left:3px solid #f59e0b" @click="loadTrackingStatus('in_progress')">
+            <div class="metric-label">In Progress</div>
+            <div class="metric-value" x-text="trackingSummary.in_progress||0"></div>
+            <div class="metric-sub">Working on it</div>
+          </div>
+          <div class="metric" style="cursor:pointer;border-left:3px solid #ef4444" @click="loadTrackingStatus('rejected')">
+            <div class="metric-label">Rejected</div>
+            <div class="metric-value" x-text="trackingSummary.rejected||0"></div>
+            <div class="metric-sub">Passed</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="height:52px;white-space:nowrap;align-self:center" @click="openAddToTrackerModal()">
+          <i class="ti ti-plus"></i> Add RFP
+        </button>
+      </div>
+
+      <!-- Tracking Table -->
+      <div class="card" style="padding:0">
+        <div x-show="loadingTracking" class="loading-center"><div class="spinner"></div></div>
+        <template x-if="!loadingTracking">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Status</th>
+                <th>Tender</th>
+                <th>Category</th>
+                <th>Portal</th>
+                <th>Closing</th>
+                <th>Notes</th>
+                <th>Last Modified</th>
+                <th>Actions</th>
+              </tr></thead>
+              <tbody>
+                <template x-for="t in trackingTenders" :key="t.id">
+                  <tr>
+                    <td>
+                      <span class="badge" :style="statusStyle(t.status)" x-text="t.status||'new'"></span>
+                    </td>
+                    <td style="max-width:220px;cursor:pointer" @click="openTender(t.id)">
+                      <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" x-text="t.name||'Untitled'"></div>
+                    </td>
+                    <td><span class="badge badge-cat" x-text="t.rfp_category||'—'" style="font-size:10px"></span></td>
+                    <td><span :class="portalBadge(t.source_portal)" class="badge" x-text="t.source_portal||'—'"></span></td>
+                    <td style="font-size:12px">
+                      <span x-show="t.closing_date" :style="daysLeft(t.closing_date)<7?'color:#ef4444;font-weight:500':''" x-text="fmtDate(t.closing_date)"></span>
+                      <span x-show="!t.closing_date" style="color:var(--muted);font-style:italic;font-size:11px">No date</span>
+                    </td>
+                    <td style="font-size:12px;color:var(--muted)">
+                      <span x-show="t.notes" style="cursor:pointer" @click="openNotesModal(t.id)">
+                        <i class="ti ti-message"></i> <span x-text="t.notes_history?t.notes_history.length:0"></span>
+                      </span>
+                      <button class="btn btn-sm" @click="openNotesModal(t.id)" style="height:24px;padding:0 6px;font-size:11px">
+                        <i class="ti ti-plus"></i>
+                      </button>
+                    </td>
+                    <td style="font-size:11px;color:var(--muted);white-space:nowrap" x-text="fmtDateTime(t.last_modified_at)"></td>
+                    <td>
+                      <select class="btn btn-sm" :value="t.status||'new'" @change="quickStatusUpdate(t.id, $event.target.value)" style="height:28px;font-size:11px;padding:0 8px">
+                        <option value="new">New</option>
+                        <option value="identified">Identified</option>
+                        <option value="active">Active</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </td>
+                  </tr>
+                </template>
+                <template x-if="!trackingTenders.length">
+                  <tr><td colspan="8"><div class="empty-state"><i class="ti ti-inbox"></i>No RFPs in this status</div></td></tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </template>
+        <div class="pagination" style="padding:12px 16px">
+          <span class="page-info" x-text="'Showing '+(trackingOffset+1)+' – '+Math.min(trackingOffset+trackingTenders.length,trackingTotal)+' of '+trackingTotal"></span>
+          <button class="btn btn-sm" @click="trackingOffset=Math.max(0,trackingOffset-50);loadTrackingStatus(trackingTab)" :disabled="trackingOffset===0"><i class="ti ti-chevron-left"></i></button>
+          <button class="btn btn-sm" @click="trackingOffset+=50;loadTrackingStatus(trackingTab)" :disabled="trackingOffset+50>=trackingTotal"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" x-show="modalOpen" x-cloak @click.self="modalOpen=false">
+  <div class="modal" x-show="modalOpen">
+    <div class="modal-header">
+      <div style="flex:1">
+        <div style="font-size:16px;font-weight:600;margin-bottom:4px" x-text="selectedTender.name||'—'"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <span class="badge badge-cat" x-text="selectedTender.rfp_category||'—'"></span>
+          <span :class="portalBadge(selectedTender.source_portal)" class="badge" x-text="selectedTender.source_portal||'—'"></span>
+          <span class="badge" :style="statusStyle(selectedTender.status)" x-text="(selectedTender.status||'new').toUpperCase()"></span>
+        </div>
+      </div>
+      <button class="modal-close" @click="modalOpen=false"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <!-- Status Update Section -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px">
+        <div class="detail-label" style="margin-bottom:8px">Update Status</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select x-model="selectedTender.status" @change="updateStatus(selectedTender.id, selectedTender.status)" style="min-width:140px">
+            <option value="new">New</option>
+            <option value="identified">Identified</option>
+            <option value="active">Active</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <input type="text" placeholder="Add a note (optional)" x-model="statusNote" style="flex:1;min-width:200px" @keyup.enter="updateStatusWithNote()">
+          <button class="btn btn-primary btn-sm" @click="updateStatusWithNote()" :disabled="!statusNote && selectedTender.status === (selectedTender._original_status||'new')">
+            <i class="ti ti-check"></i> Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div x-show="selectedTender.summary" class="summary-box">
+        <div class="detail-label" style="margin-bottom:6px">Summary</div>
+        <div x-text="selectedTender.summary"></div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-label">Issuing org</div>
+          <div class="detail-value" x-text="selectedTender.end_client||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Solicitation ID</div>
+          <div class="detail-value" x-text="selectedTender.solicitation_id||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Opening date</div>
+          <div class="detail-value">
+            <template x-if="selectedTender.open_date">
+              <span x-text="fmtDate(selectedTender.open_date)"></span>
+            </template>
+            <template x-if="!selectedTender.open_date">
+              <span style="color:var(--muted);font-style:italic" x-text="'Released '+fmtDate(selectedTender.first_seen)"></span>
+            </template>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Closing date</div>
+          <div class="detail-value">
+            <template x-if="selectedTender.closing_date">
+              <span style="color:#ef4444;font-weight:500" x-text="fmtDate(selectedTender.closing_date)"></span>
+            </template>
+            <template x-if="!selectedTender.closing_date">
+              <span style="color:var(--muted);font-style:italic" x-text="selectedTender.closing_date_note||'Date not specified'"></span>
+            </template>
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Office</div>
+          <div class="detail-value" x-text="selectedTender.office||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Country</div>
+          <div class="detail-value" x-text="selectedTender.country||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Contact</div>
+          <div class="detail-value" x-text="selectedTender.contact_name||selectedTender.contact_email||'—'"></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Budget</div>
+          <div class="detail-value" x-text="selectedTender.budget_text||'—'"></div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div x-show="selectedTender.description||selectedTender.full_description" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="detail-label" style="margin-bottom:6px">Description</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--muted);max-height:200px;overflow-y:auto" x-text="selectedTender.full_description||selectedTender.description||'—'"></div>
+      </div>
+
+      <!-- Notes Section -->
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="detail-label" style="margin-bottom:8px">Notes</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input type="text" placeholder="Add a note..." x-model="newNote" style="flex:1" @keyup.enter="addNote()">
+          <button class="btn btn-primary btn-sm" @click="addNote()" :disabled="!newNote.trim()">
+            <i class="ti ti-plus"></i> Add
+          </button>
+        </div>
+        <template x-if="tenderNotes.length">
+          <div style="max-height:200px;overflow-y:auto">
+            <template x-for="(note, idx) in tenderNotes" :key="idx">
+              <div style="padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;font-size:12px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-weight:500;color:var(--text)" x-text="note.author||'User'"></span>
+                  <span style="color:var(--muted);font-size:11px" x-text="fmtDateTime(note.created_at)"></span>
+                </div>
+                <div style="color:var(--muted);line-height:1.5" x-text="note.note"></div>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template x-if="!tenderNotes.length">
+          <div style="color:var(--muted);font-size:12px;font-style:italic">No notes yet</div>
+        </template>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <a :href="selectedTender.details_url" target="_blank" class="btn btn-primary" x-show="selectedTender.details_url">
+          <i class="ti ti-external-link"></i> Open on portal
+        </a>
+        <button class="btn" @click="modalOpen=false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" x-show="toast" x-text="toast" x-cloak style="display:none"></div>
+
+<!-- ADD TO TRACKER MODAL -->
+<div class="modal-overlay" x-show="addModalOpen" x-cloak @click.self="addModalOpen=false">
+  <div class="modal" style="max-width:560px" x-show="addModalOpen">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:16px;font-weight:600">Add RFP to Tracker</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Search existing or create new</div>
+      </div>
+      <button class="modal-close" @click="addModalOpen=false"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <!-- Search existing tenders -->
+      <div class="form-row full">
+        <div class="search-dropdown">
+          <label class="form-label">Search existing tenders</label>
+          <input class="form-input" type="text" placeholder="Type to search by name, ID, or issuer..."
+                 x-model="addSearchQuery" @input.debounce.300ms="searchTendersForAdd()"
+                 @click.outside="addSearchResults=[]">
+          <template x-if="addSearchResults.length">
+            <div class="search-dropdown-list">
+              <template x-for="item in addSearchResults" :key="item.id">
+                <div class="search-dropdown-item" @click="selectExistingTender(item)">
+                  <div class="sd-name" x-text="item.name||'Untitled'"></div>
+                  <div class="sd-sub">
+                    <span x-text="item.source_portal||'—'"></span>
+                    <span x-show="item.end_client"> — </span>
+                    <span x-text="item.end_client||''"></span>
+                    <span x-show="item.solicitation_id"> (</span>
+                    <span x-text="item.solicitation_id||''"></span>
+                    <span x-show="item.solicitation_id">)</span>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div style="text-align:center;color:var(--muted);font-size:12px;margin:8px 0 12px;border-top:1px solid var(--border);padding-top:12px">
+        — or create a new tender —
+      </div>
+
+      <!-- Create new form -->
+      <div class="form-row">
+        <div>
+          <label class="form-label">Tender Name *</label>
+          <input class="form-input" type="text" x-model="newTender.name" placeholder="RFP title">
+        </div>
+        <div>
+          <label class="form-label">Category</label>
+          <select class="form-input" x-model="newTender.rfp_category">
+            <option value="">Select category</option>
+            <template x-for="cat in categories" :key="cat">
+              <option :value="cat" x-text="cat"></option>
+            </template>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Portal / Source</label>
+          <select class="form-input" x-model="newTender.source_portal">
+            <option value="">Select portal</option>
+            <template x-for="p in portals" :key="p">
+              <option :value="p" x-text="p"></option>
+            </template>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Issuer / Client</label>
+          <input class="form-input" type="text" x-model="newTender.end_client" placeholder="Issuing organization">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Solicitation ID</label>
+          <input class="form-input" type="text" x-model="newTender.solicitation_id" placeholder="Optional">
+        </div>
+        <div>
+          <label class="form-label">Status</label>
+          <select class="form-input" x-model="newTender.status">
+            <option value="new">New</option>
+            <option value="identified">Identified</option>
+            <option value="active">Active</option>
+            <option value="in_progress">In Progress</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Opening Date</label>
+          <input class="form-input" type="text" x-model="newTender.open_date" placeholder="e.g. 2026-06-15 or TBD">
+        </div>
+        <div>
+          <label class="form-label">Closing Date</label>
+          <input class="form-input" type="text" x-model="newTender.closing_date" placeholder="e.g. 2026-07-30 or TBD">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Contact Name</label>
+          <input class="form-input" type="text" x-model="newTender.contact_name" placeholder="Optional">
+        </div>
+        <div>
+          <label class="form-label">Budget</label>
+          <input class="form-input" type="text" x-model="newTender.budget_text" placeholder="e.g. $50,000">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div>
+          <label class="form-label">Summary / Description</label>
+          <textarea class="form-input tall" x-model="newTender.summary" placeholder="Brief description of the RFP"></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+        <button class="btn" @click="addModalOpen=false">Cancel</button>
+        <button class="btn btn-primary" @click="submitNewTender()" :disabled="!newTender.name.trim()">
+          <i class="ti ti-plus"></i> Create & Track
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function app() {
+  return {
+    page: 'dashboard',
+    pageTitles: { dashboard: 'Dashboard', tenders: 'All Tenders', pipeline: 'Pipeline Control', tracking: 'RFP Tracker' },
+    apiOk: true, stats: {},
+    tenders: [], loadingTenders: false, tendersTotal: 0, tendersOffset: 0,
+    pipelineRuns: [],
+    categories: ['AI / Machine Learning','Software Development','IT Infrastructure','Cloud Services','Cybersecurity','Data Analytics','IT Staffing','Consulting / Advisory','Training & Education','Research & Development','Professional Services','Healthcare IT','Digital Transformation','Network / Telecom','Other Technology'],
+    portals: [],
+    filters: { search:'', category:'', portal:'', status:'open' }, sort: 'closing_date', sortOrder: 'asc',
+    modalOpen: false, selectedTender: {},
+    triggering: false, toast: null, toastTimer: null,
+    
+    // Tracking state
+    trackingTab: 'new',
+    trackingTenders: [], loadingTracking: false, trackingTotal: 0, trackingOffset: 0,
+    trackingSummary: {},
+    tabLabels: { new: 'New', identified: 'Identified', active: 'Active', in_progress: 'In Progress', rejected: 'Rejected', completed: 'Completed' },
+    
+    // Notes state
+    tenderNotes: [], newNote: '', statusNote: '',
+    
+    // Add to tracker state
+    addModalOpen: false,
+    addSearchQuery: '',
+    addSearchResults: [],
+    newTender: {
+      name: '', rfp_category: '', source_portal: '', end_client: '',
+      solicitation_id: '', status: 'new', open_date: '', closing_date: '',
+      contact_name: '', budget_text: '', summary: ''
+    },
+
+    async init() {
+      await this.loadStats();
+      await this.loadPortals();
+    },
+
+    async api(path) {
+      try {
+        const r = await fetch('/api' + path);
+        this.apiOk = r.ok;
+        return r.ok ? r.json() : null;
+      } catch { this.apiOk = false; return null; }
+    },
+
+    async post(path) {
+      try { const r = await fetch('/api' + path, { method:'POST' }); return r.ok ? r.json() : null; }
+      catch { return null; }
+    },
+
+    async loadStats() {
+      const d = await this.api('/stats/summary');
+      if (d) this.stats = d;
+    },
+
+    async loadPortals() {
+      const d = await this.api('/tenders/options/filters');
+      if (d && d.portals) this.portals = d.portals;
+    },
+
+    async loadTenders() {
+      this.loadingTenders = true;
+      const p = new URLSearchParams({ limit:50, offset:this.tendersOffset });
+      if (this.filters.search) p.set('search', this.filters.search);
+      if (this.filters.category) p.set('category', this.filters.category);
+      if (this.filters.portal) p.set('source', this.filters.portal);
+      if (this.filters.status) p.set('is_open', this.filters.status);
+      p.set('sort', this.sort);
+      p.set('order', this.sortOrder);
+      const d = await this.api('/tenders/?' + p);
+      if (d) { this.tenders = d.data; this.tendersTotal = d.total; }
+      this.loadingTenders = false;
+    },
+
+    async loadPipeline() {
+      const runs = await this.api('/pipeline/runs');
+      if (runs) this.pipelineRuns = runs;
+    },
+
+    async openTender(id) {
+      const d = await this.api('/tenders/' + id);
+      if (d) { 
+        this.selectedTender = d; 
+        this.selectedTender._original_status = d.status || 'new';
+        this.modalOpen = true; 
+        this.loadNotes(id);
+      }
+    },
+
+    async loadTrackingSummary() {
+      const d = await this.api('/tenders/tracking/summary');
+      if (d) this.trackingSummary = d;
+    },
+
+    async loadTrackingStatus(status) {
+      this.trackingTab = status;
+      this.loadingTracking = true;
+      this.trackingOffset = 0;
+      let url = '/tenders/tracking/';
+      if (status) {
+        url += status;
+      } else {
+        // Load all - use regular tenders endpoint
+        const p = new URLSearchParams({ limit: 50, offset: this.trackingOffset, sort: 'first_seen', order: 'desc' });
+        const d = await this.api('/tenders/?' + p);
+        if (d) { this.trackingTenders = d.data; this.trackingTotal = d.total; }
+        this.loadingTracking = false;
+        return;
+      }
+      const p = new URLSearchParams({ limit: 50, offset: this.trackingOffset });
+      const d = await this.api(url + '?' + p);
+      if (d) { this.trackingTenders = d.data; this.trackingTotal = d.total; }
+      this.loadingTracking = false;
+    },
+
+    async updateStatus(tenderId, newStatus) {
+      const r = await fetch('/api/tenders/' + tenderId + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (r.ok) {
+        this.showToast('Status updated to ' + newStatus);
+        this.loadTrackingSummary();
+      } else {
+        const err = await r.json();
+        this.showToast('Error: ' + (err.detail || 'Failed to update'));
+        // Revert
+        this.selectedTender.status = this.selectedTender._original_status || 'new';
+      }
+    },
+
+    async updateStatusWithNote() {
+      const tenderId = this.selectedTender.id;
+      const newStatus = this.selectedTender.status;
+      const note = this.statusNote;
+      
+      const r = await fetch('/api/tenders/' + tenderId + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus, note: note || null })
+      });
+      if (r.ok) {
+        this.showToast('Status updated to ' + newStatus);
+        this.statusNote = '';
+        this.selectedTender._original_status = newStatus;
+        this.loadTrackingSummary();
+        this.loadNotes(tenderId);
+      } else {
+        const err = await r.json();
+        this.showToast('Error: ' + (err.detail || 'Failed to update'));
+        this.selectedTender.status = this.selectedTender._original_status || 'new';
+      }
+    },
+
+    async quickStatusUpdate(tenderId, newStatus) {
+      const r = await fetch('/api/tenders/' + tenderId + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (r.ok) {
+        this.showToast('Status updated to ' + newStatus);
+        this.loadTrackingSummary();
+        this.loadTrackingStatus(this.trackingTab);
+      } else {
+        const err = await r.json();
+        this.showToast('Error: ' + (err.detail || 'Failed to update'));
+      }
+    },
+
+    async loadNotes(tenderId) {
+      const d = await this.api('/tenders/' + tenderId + '/notes');
+      if (d) this.tenderNotes = d.notes || [];
+    },
+
+    async addNote() {
+      if (!this.newNote.trim()) return;
+      const tenderId = this.selectedTender.id;
+      
+      const r = await fetch('/api/tenders/' + tenderId + '/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note: this.newNote, author: 'User' })
+      });
+      if (r.ok) {
+        this.showToast('Note added');
+        this.newNote = '';
+        this.loadNotes(tenderId);
+      } else {
+        this.showToast('Failed to add note');
+      }
+    },
+
+    openAddToTrackerModal() {
+      this.addSearchQuery = '';
+      this.addSearchResults = [];
+      this.newTender = {
+        name: '', rfp_category: '', source_portal: '', end_client: '',
+        solicitation_id: '', status: 'new', open_date: '', closing_date: '',
+        contact_name: '', budget_text: '', summary: ''
+      };
+      this.addModalOpen = true;
+    },
+
+    async searchTendersForAdd() {
+      if (!this.addSearchQuery || this.addSearchQuery.length < 2) {
+        this.addSearchResults = [];
+        return;
+      }
+      const d = await this.api('/tenders/search?q=' + encodeURIComponent(this.addSearchQuery));
+      if (d) this.addSearchResults = d.data || [];
+    },
+
+    async selectExistingTender(item) {
+      // Set status to 'new' (or keep current) and update last_modified_at
+      const r = await fetch('/api/tenders/' + item.id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'new', note: 'Added to tracker from search' })
+      });
+      if (r.ok) {
+        this.showToast('"' + (item.name || 'Tender') + '" added to tracker');
+        this.addModalOpen = false;
+        this.loadTrackingSummary();
+        this.loadTrackingStatus(this.trackingTab);
+      } else {
+        const err = await r.json().catch(() => ({}));
+        // If it's already tracked (same status), just show success
+        if (err.detail && err.detail.includes('Cannot transition')) {
+          this.showToast('"' + (item.name || 'Tender') + '" is already tracked');
+          this.addModalOpen = false;
+        } else {
+          this.showToast('Error: ' + (err.detail || 'Failed to add'));
+        }
+      }
+    },
+
+    async submitNewTender() {
+      if (!this.newTender.name.trim()) return;
+      
+      const payload = {};
+      for (const [k, v] of Object.entries(this.newTender)) {
+        if (v && v !== '') payload[k] = v;
+      }
+      
+      // Handle closing_date: if it's not a valid date, move to closing_date_note
+      if (payload.closing_date) {
+        const parsed = new Date(payload.closing_date);
+        if (isNaN(parsed.getTime())) {
+          // Not a valid date string — store as note
+          payload.closing_date_note = payload.closing_date;
+          delete payload.closing_date;
+        }
+      }
+      // Same for open_date
+      if (payload.open_date) {
+        const parsed = new Date(payload.open_date);
+        if (isNaN(parsed.getTime())) {
+          delete payload.open_date;
+        }
+      }
+      
+      const r = await fetch('/api/tenders/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (r.ok) {
+        const result = await r.json();
+        this.showToast('Tender created and added to tracker');
+        this.addModalOpen = false;
+        this.loadTrackingSummary();
+        this.loadTrackingStatus(this.trackingTab);
+        // Open the new tender detail
+        if (result.id) this.openTender(result.id);
+      } else {
+        const err = await r.json().catch(() => ({}));
+        this.showToast('Error: ' + (err.detail || 'Failed to create'));
+      }
+    },
+
+    async triggerPipeline() {
+      this.triggering = true;
+      await this.post('/pipeline/trigger');
+      this.showToast('Pipeline started!');
+      setTimeout(() => this.triggering = false, 3000);
+    },
+
+    async triggerSkill(skill) {
+      this.triggering = true;
+      await this.post('/pipeline/trigger/' + skill);
+      this.showToast(skill + ' triggered.');
+      setTimeout(() => this.triggering = false, 2000);
+    },
+
+    toggleSort(col) {
+      if (this.sort === col) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sort = col;
+        this.sortOrder = 'asc';
+      }
+      this.tendersOffset = 0;
+      this.loadTenders();
+    },
+
+    sortIcon(col) {
+      if (this.sort !== col) return '';
+      return this.sortOrder === 'asc' ? ' ▲' : ' ▼';
+    },
+
+    resetFilters() {
+      this.filters = { search:'', category:'', portal:'', status:'open' }; this.sort = 'closing_date'; this.sortOrder = 'asc';
+      this.tendersOffset = 0;
+      this.loadTenders();
+    },
+
+    showNewToday() {
+      this.page = 'tenders';
+      this.filters = { search:'', category:'', portal:'', status:'' };
+      this.sort = 'first_seen';
+      this.sortOrder = 'desc';
+      this.tendersOffset = 0;
+      this.loadingTenders = true;
+      // Load today's new open RFPs
+      const p = new URLSearchParams({ limit: 50, offset: 0, new_today: 'true', sort: 'first_seen', order: 'desc' });
+      this.api('/tenders/?' + p).then(d => {
+        if (d) { this.tenders = d.data; this.tendersTotal = d.total; }
+        this.loadingTenders = false;
+      });
+    },
+
+    nextPage() { this.tendersOffset += 50; this.loadTenders(); },
+    prevPage() { this.tendersOffset = Math.max(0, this.tendersOffset - 50); this.loadTenders(); },
+
+    showToast(msg) {
+      this.toast = msg;
+      clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => this.toast = null, 3500);
+    },
+
+    portalBadge(p) {
+      if (!p) return '';
+      if (p === 'SAM.gov') return 'badge-federal';
+      if (['SAP Ariba','JAGGAER'].includes(p)) return 'badge-enterprise';
+      if (['Montana EMACS','Florida ProRFX','CAL eProcure'].includes(p)) return 'badge-state';
+      if (['City of Los Angeles','City of Burbank','City of Sunnyvale','Broward County','Chicago Public Schools','Texas DOT','TIPS','City of Ashland Oregon','City of Cincinnati','Angeleno RAMP'].includes(p)) return 'badge-city';
+      if (['BidNet Direct','Bonfire','OpenGov','Planet Bids'].includes(p)) return 'badge-aggregator';
+      if (['University of Minnesota','University of Iowa'].includes(p)) return 'badge-education';
+      return 'badge-niche';
+    },
+
+    fmtDate(d) {
+      if (!d) return '—';
+      try { return new Date(d).toLocaleDateString('en-CA', { year:'numeric', month:'short', day:'numeric' }); }
+      catch { return d; }
+    },
+
+    fmtDateTime(d) {
+      if (!d) return '—';
+      try { 
+        return new Date(d).toLocaleString('en-CA', { 
+          year:'numeric', month:'short', day:'numeric', 
+          hour:'2-digit', minute:'2-digit' 
+        }); 
+      }
+      catch { return d; }
+    },
+
+    daysLeft(d) {
+      if (!d) return 999;
+      return Math.ceil((new Date(d) - new Date()) / 86400000);
+    },
+
+    statusStyle(status) {
+      const styles = {
+        'new': 'background:#f3f4f6;color:#374151',
+        'identified': 'background:#dbeafe;color:#1e40af',
+        'active': 'background:#dcfce7;color:#166534',
+        'in_progress': 'background:#fef3c7;color:#92400e',
+        'completed': 'background:#e0e7ff;color:#3730a3',
+        'rejected': 'background:#fee2e2;color:#991b1b',
+      };
+      return styles[status] || styles['new'];
+    },
+  };
+}
+</script>
+</body>
+</html>
